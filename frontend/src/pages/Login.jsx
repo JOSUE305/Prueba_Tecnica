@@ -1,8 +1,14 @@
-export default function Login() {
+function Login() {
   return (
-    <div>
-      <h1>Login</h1>
-      <p>Página Login funcionando ✅</p>
+    <div className="login">
+      <h2>Iniciar sesión</h2>
+
+      <input type="text" placeholder="Usuario" />
+      <input type="password" placeholder="Contraseña" />
+
+      <button>Entrar</button>
     </div>
   );
 }
+
+export default Login;
