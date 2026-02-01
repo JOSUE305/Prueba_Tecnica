@@ -1,54 +1,97 @@
-# Carnicería JP – Frontend
+## 📘 Documentación – Frontend
+Proyecto: Carnicería JP
+# 📌 Descripción general
 
-Proyecto frontend desarrollado con React como parte del reto técnico
-de periodo de prueba para el área de Desarrollo de Software.
+El frontend de Carnicería JP es una aplicación web desarrollada con React + Vite que permite a los usuarios visualizar productos, filtrarlos por categoría, gestionar un carrito de compras y realizar pedidos.
+Además, cuenta con un sistema de autenticación, roles de usuario (cliente / admin) y vistas administrativas para la gestión de productos y órdenes.
 
-## Base de datos
-El proyecto usa SQLite.  
-El archivo `database.db` **no se incluye en el repositorio**.  
-Al iniciar la aplicación (`npm run start`), se ejecuta automáticamente el script `schema.sql` para crear las tablas necesarias.
+El frontend se comunica con un backend REST mediante peticiones HTTP protegidas con JWT.
 
-Si deseas recrear la base manualmente:
+# 🛠️ Tecnologías utilizadas
+React
+Vite
+JavaScript (ES6+)
+React Router DOM
+Context API
+HTML5 / CSS3
+Fetch API
+LocalStorage
+
+# 📂 Estructura del proyecto
+frontend/
+├── public/
+│   └── images, logos
+├── src/
+│   ├── components/
+│   │   ├── Navbar.jsx
+│   │   ├── HeroSection.jsx
+│   │   ├── AboutSection.jsx
+│   │   ├── CategoryFilter.jsx
+│   │   ├── CourseCard.jsx
+│   │   └── Footer.jsx
+│   ├── pages/
+│   │   ├── Home.jsx
+│   │   ├── Login.jsx
+│   │   ├── Register.jsx
+│   │   ├── Cart.jsx
+│   │   ├── Products.jsx
+│   │   ├── Categories.jsx
+│   │   ├── AdminOrders.jsx
+│   │   └── OrderDetails.jsx
+│   ├── context/
+│   │   └── AuthContext.jsx
+│   ├── services/
+│   │   └── api.js
+│   ├── styles/
+│   │   └── main.css
+│   ├── App.jsx
+│   └── main.jsx
+├── index.html
+└── package.json
 
 
+## ⚙️ Funcionalidades principales
 
-## Objetivo
-Crear la estructura base del frontend y validar el correcto funcionamiento
-del entorno de desarrollo.
+# 👤 Autenticación
+Registro e inicio de sesión
+Manejo de sesión mediante JWT
+Persistencia de usuario en localStorage
 
-## Avance Día 1
-- Proyecto creado con React y Vite.
-- Configuración inicial del proyecto.
-- Implementación de React Router.
-- Creación de vistas base (Home y Login).
-- Organización de carpetas del proyecto.
+# 🗂️ Filtrado por categorías
+Las categorías se obtienen desde la API
+Filtrado dinámico sin recargar la página
 
-## Avance Día 2
-Backend
-- Endpoints de login con JWT y encriptación de contraseñas (bcrypt).
-- Sistema de permisos para diferenciar administradores y clientes.
-- Endpoints de categorías con CRUD completo.
-- Endpoints de productos con CRUD y campo stock.
-- Endpoints de carrito/órdenes con confirmación de compra, inserción de items y descuento automático de stock.
-- Configuración de archivo .env para variables sensibles.
-- Corrección de errores críticos (SQLITE_ERROR, items.forEach, ERR_CONNECTION_REFUSED).
+# 🛒 Carrito de compras
+Agregar productos al carrito
+Modificar cantidades respetando el stock
+Eliminar productos
+Confirmar compra (checkout)
 
-Frontend
-- Vista Products.jsx conectada al backend con CRUD de productos.
-- Vista Cart.jsx con carrito en localStorage, cálculo de total y confirmación de compra.
-- Conexión completa con el backend mediante fetch y token.
-- Limpieza automática del carrito tras confirmar la compra.
+# 🛠️ Panel de administración
+Gestión de productos (CRUD)
+Visualización de órdenes
+Acceso restringido por rol admin
 
-## Tecnologías utilizadas
-- React
-- Vite
-- JavaScript
-- HTML
-- CSS
-- Git y GitHub
+# 🔄 Flujo general
 
-## Instalación y ejecución
-```bash
+El usuario se autentica
+Se obtiene un token JWT
+El token se envía en cada request protegida
+El backend valida permisos
+Se renderiza la información correspondiente
+
+## Cómo ejecutar el frontend
 npm install
 npm run dev
-sqlite3 database.db < schema.sql
+
+Abrir en el navegador:
+http://localhost:5173
+
+## 🚀 Posibles mejoras
+
+Manejo de errores con notificaciones
+Paginación de productos
+obtener todas las ordenes de los usuarios con el admin
+Búsqueda por nombre
+Mejoras de UI/UX
+Estado global con Redux
