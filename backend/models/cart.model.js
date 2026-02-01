@@ -11,10 +11,11 @@ export const addToCart = (userId, productId, quantity, price, callback) => {
   });
 };
 
+
 // Obtener carrito del usuario (items sin order_id confirmado)
 export const getCart = (userId, callback) => {
   const query = `
-    SELECT oi.id, oi.product_id, p.name, oi.quantity, oi.price
+    SELECT oi.id, oi.product_id, p.name, oi.quantity, oi.price, p.stock
     FROM order_items oi
     JOIN products p ON oi.product_id = p.id
     WHERE oi.order_id IS NULL
@@ -23,6 +24,7 @@ export const getCart = (userId, callback) => {
     callback(err, rows);
   });
 };
+
 
 // Actualizar cantidad
 export const updateCartItem = (id, quantity, callback) => {

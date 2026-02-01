@@ -85,3 +85,17 @@ export async function getCategories() {
     return res.json(); 
   }
 
+
+  export async function register({ username, password, role }) {
+  try {
+    const res = await fetch("http://localhost:3000/api/users/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username, password, role }),
+    });
+    return await res.json();
+  } catch (err) {
+    return { message: "Error de conexión con el servidor" };
+  }
+}
+

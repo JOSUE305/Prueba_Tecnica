@@ -55,3 +55,14 @@ export const getOrderDetails = (orderId, callback) => {
     callback(err, rows);
   });
 };
+
+
+// Obtener todas las órdenes (para admin)
+
+export const getAllOrdersal = (callback) => {
+  const query = `SELECT * FROM orders ORDER BY created_at DESC`;
+  db.all(query, [], (err, rows) => {
+    callback(err, rows);
+  });
+};
+

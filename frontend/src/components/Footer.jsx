@@ -9,7 +9,7 @@ function Footer() {
         <div className="footer-links">
           <h4>Enlaces</h4>
           <a href="/">Inicio</a>
-          <a href="/products">Productos</a>
+          <a href="#productos">Productos</a>
           <a href="/cart">Carrito</a>
         </div>
         <div className="footer-contact">

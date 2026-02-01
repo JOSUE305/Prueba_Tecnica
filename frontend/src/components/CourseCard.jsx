@@ -7,18 +7,36 @@ const categoryMap = {
 };
 
 function CourseCard({ product }) {
-  const handleAddToCart = () => {
-    const cart = JSON.parse(localStorage.getItem("cart")) || [];
-    const existing = cart.find((item) => item.id === product.id);
-
-    if (existing) {
-      existing.quantity += 1;
-    } else {
-      cart.push({ ...product, quantity: 1 });
+  const handleAddToCart = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("Debes iniciar sesión para agregar al carrito ✅");
+      return;
     }
 
-    localStorage.setItem("cart", JSON.stringify(cart));
-    alert(`${product.name} agregado al carrito 🛒`);
+    try {
+      const res = await fetch("http://localhost:3000/api/cart", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          product_id: product.id,
+          quantity: 1,
+          price: product.price,
+        }),
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        alert(`${product.name} agregado al carrito 🛒`);
+      } else {
+        alert(data.message || "Error al agregar producto ❌");
+      }
+    } catch (err) {
+      alert("Error de conexión con el servidor");
+    }
   };
 
   // 👇 obtenemos nombre y emoji desde el mapa
@@ -32,10 +50,17 @@ function CourseCard({ product }) {
       <div className="card-image">{categoryInfo.emoji}</div>
       <h3>{product.name}</h3>
       <p className="card-category">Categoría: {categoryInfo.name}</p>
+      <p className="card-stock">Stock disponible: {product.stock}</p>
       <p className="price">${Number(product.price).toFixed(2)}</p>
-      <button onClick={handleAddToCart}>Agregar al carrito</button>
+      <button 
+        onClick={handleAddToCart} 
+        disabled={product.stock === 0}
+      >
+        {product.stock === 0 ? "Sin stock ❌" : "Agregar al carrito"}
+      </button>
     </div>
   );
 }
 
 export default CourseCard;
+

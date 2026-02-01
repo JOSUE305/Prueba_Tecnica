@@ -54,3 +54,18 @@ export const getOrderById = (req, res) => {
     res.json(details);
   });
 };
+
+
+export const getAllOrders = (req, res) => {
+  if (req.user.role !== "admin") {
+    return res.status(403).json({ message: "Acceso denegado" });
+  }
+
+  Orders.getAllOrdersal((err, orders) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json(orders);
+  });
+};
+
+
+

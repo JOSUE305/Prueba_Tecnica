@@ -16,7 +16,10 @@ function Navbar() {
 
       {/* Enlaces */}
       <div className="navbar-links">
-        <Link to="/">Inicio</Link>
+        <Link to="/" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+        Inicio
+        </Link>
+
         <Link to="/cart">Carrito 🛒</Link>
 
         {!user && (
@@ -29,12 +32,14 @@ function Navbar() {
           <>
             <span className="navbar-user">👤 {user.username}</span>
             <button onClick={logout}>Salir</button>
+            <Link to="/admin/orders">Órdenes</Link> 
 
             {/* 👇 enlaces solo para admin */}
             {user.role === "admin" && (
               <>
                 <Link to="/products">Productos</Link>
-                <Link to="/categories">Categorías</Link>
+
+                
               </>
             )}
           </>

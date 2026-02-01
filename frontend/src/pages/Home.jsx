@@ -53,14 +53,17 @@ function Home() {
   };
 
   return (
+    
     <div className="home">
       <Navbar />
       <HeroSection />
+      
+
 
       <main className="container">
         <AboutSection />
 
-        <section className="products-section">
+        <section id="productos" className="products-section">
           <h2 className="section-title">Nuestros Productos</h2>
           <p className="section-subtitle">
             Selecciona una categoría para filtrar
