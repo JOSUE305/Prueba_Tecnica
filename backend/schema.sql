@@ -40,3 +40,9 @@ CREATE TABLE order_items (
 -- Insertar usuario admin por defecto
 INSERT INTO users (username, password, role)
 VALUES ('admin', '$2b$10$N.WmqsELIxJql0AGcdSieOfbQBjCYj5ddobEiD97f3xsHP5fejK9y', 'admin');
+
+-- Insertar categorías iniciales
+ INSERT OR IGNORE INTO categories (name) VALUES ('Res');
+  INSERT OR IGNORE INTO categories (name) VALUES ('Pollo');
+   INSERT OR IGNORE INTO categories (name) VALUES ('Cerdo');
+    INSERT OR IGNORE INTO categories (name) VALUES ('Pescado');
