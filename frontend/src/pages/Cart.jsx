@@ -12,44 +12,68 @@ function Cart() {
 
   const total = items.reduce((sum, item) => sum + item.quantity * item.price, 0);
 
-const handleCheckout = async () => {
-  const token = localStorage.getItem("token");
-  if (!token) {
-    alert("Debes iniciar sesión para confirmar tu compra ✅");
-    navigate("/login");
-    return;
-  }
+  // aumentar cantidad
+  const increaseQuantity = (index) => {
+    const updated = [...items];
+    updated[index].quantity += 1;
+    setItems(updated);
+    localStorage.setItem("cart", JSON.stringify(updated));
+  };
 
-  try {
-    const res = await fetch("http://localhost:3000/api/orders", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        items: items.map((i) => ({
-          product_id: i.id,
-          quantity: i.quantity,
-          price: i.price,
-        })),
-        total,
-      }),
-    });
-
-    const data = await res.json();
-    if (res.ok) {
-      alert("Compra confirmada 🚀");
-      localStorage.removeItem("cart"); // 👈 limpiar carrito
-      setItems([]); // 👈 actualizar estado
-    } else {
-      alert(data.message || "Error al confirmar compra");
+  // disminuir cantidad
+  const decreaseQuantity = (index) => {
+    const updated = [...items];
+    if (updated[index].quantity > 1) {
+      updated[index].quantity -= 1;
+      setItems(updated);
+      localStorage.setItem("cart", JSON.stringify(updated));
     }
-  } catch (err) {
-    alert("Error de conexión con el servidor");
-  }
-};
+  };
 
+  // eliminar producto
+  const removeItem = (index) => {
+    const updated = items.filter((_, i) => i !== index);
+    setItems(updated);
+    localStorage.setItem("cart", JSON.stringify(updated));
+  };
+
+  const handleCheckout = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("Debes iniciar sesión para confirmar tu compra ✅");
+      navigate("/login");
+      return;
+    }
+
+    try {
+      const res = await fetch("http://localhost:3000/api/orders", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          items: items.map((i) => ({
+            product_id: i.id,
+            quantity: i.quantity,
+            price: i.price,
+          })),
+          total,
+        }),
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        alert("Compra confirmada 🚀");
+        localStorage.removeItem("cart");
+        setItems([]);
+      } else {
+        alert(data.message || "Error al confirmar compra");
+      }
+    } catch (err) {
+      alert("Error de conexión con el servidor");
+    }
+  };
 
   return (
     <div className="cart">
@@ -66,6 +90,7 @@ const handleCheckout = async () => {
                 <th>Cantidad</th>
                 <th>Precio</th>
                 <th>Subtotal</th>
+                <th>Acciones</th>
               </tr>
             </thead>
             <tbody>
@@ -75,6 +100,11 @@ const handleCheckout = async () => {
                   <td>{item.quantity}</td>
                   <td>${item.price}</td>
                   <td>${item.quantity * item.price}</td>
+                  <td>
+                    <button onClick={() => increaseQuantity(idx)}>➕</button>
+                    <button onClick={() => decreaseQuantity(idx)}>➖</button>
+                    <button onClick={() => removeItem(idx)}>❌</button>
+                  </td>
                 </tr>
               ))}
             </tbody>

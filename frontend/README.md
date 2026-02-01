@@ -3,6 +3,15 @@
 Proyecto frontend desarrollado con React como parte del reto técnico
 de periodo de prueba para el área de Desarrollo de Software.
 
+## Base de datos
+El proyecto usa SQLite.  
+El archivo `database.db` **no se incluye en el repositorio**.  
+Al iniciar la aplicación (`npm run start`), se ejecuta automáticamente el script `schema.sql` para crear las tablas necesarias.
+
+Si deseas recrear la base manualmente:
+
+
+
 ## Objetivo
 Crear la estructura base del frontend y validar el correcto funcionamiento
 del entorno de desarrollo.
@@ -42,3 +51,4 @@ Frontend
 ```bash
 npm install
 npm run dev
+sqlite3 database.db < schema.sql
