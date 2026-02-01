@@ -1,25 +1,36 @@
 import { useEffect, useState } from "react";
 import { getProducts, addProduct, updateProduct, deleteProduct, getCategories } from "../services/api.js";
+import CategoryFilter from "../components/CategoryFilter"; // 👈 importa el filtro
 
 function Products() {
   const [products, setProducts] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [newProduct, setNewProduct] = useState({ name: "", price: "", stock: "", category_id: "" });
   const [editing, setEditing] = useState(null);
 
   const token = localStorage.getItem("token");
 
-  // cargar productos y categorías al inicio
   useEffect(() => {
     async function fetchData() {
       const dataProducts = await getProducts();
       setProducts(dataProducts);
+      setFilteredProducts(dataProducts); // inicializa filtro
 
       const dataCategories = await getCategories();
       setCategories(dataCategories);
     }
     fetchData();
   }, []);
+
+  // filtrar productos por categoría
+  const handleFilter = (categoryId) => {
+    if (!categoryId) {
+      setFilteredProducts(products);
+    } else {
+      setFilteredProducts(products.filter((p) => p.category_id === Number(categoryId)));
+    }
+  };
 
   // agregar producto
   const handleAdd = async (e) => {
@@ -33,6 +44,7 @@ function Products() {
     setNewProduct({ name: "", price: "", stock: "", category_id: "" });
     const data = await getProducts();
     setProducts(data);
+    setFilteredProducts(data);
   };
 
   // actualizar producto
@@ -46,6 +58,7 @@ function Products() {
     setEditing(null);
     const data = await getProducts();
     setProducts(data);
+    setFilteredProducts(data);
   };
 
   // eliminar producto
@@ -58,11 +71,15 @@ function Products() {
     alert(res.message);
     const data = await getProducts();
     setProducts(data);
+    setFilteredProducts(data);
   };
 
   return (
     <div>
       <h2>📦 Gestión de Productos</h2>
+
+      {/* Filtro dinámico */}
+      <CategoryFilter onFilter={handleFilter} />
 
       {/* Formulario para agregar */}
       <form onSubmit={handleAdd}>
@@ -98,7 +115,7 @@ function Products() {
         <button type="submit">Agregar producto</button>
       </form>
 
-      {/* Lista de productos */}
+      {/* Lista de productos filtrados */}
       <table>
         <thead>
           <tr>
@@ -110,7 +127,7 @@ function Products() {
           </tr>
         </thead>
         <tbody>
-          {products.map((p) => (
+          {filteredProducts.map((p) => (
             <tr key={p.id}>
               <td>
                 {editing?.id === p.id ? (
