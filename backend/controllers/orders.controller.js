@@ -17,20 +17,20 @@ export const confirmOrder = (req, res) => {
 
     const total = items.reduce((sum, item) => sum + item.quantity * item.price, 0);
 
-    Orders.createOrder(userId, total, (err, order) => {
-      if (err) return res.status(500).json({ error: err.message });
+        Orders.createOrder(userId, total, items, (err, order) => {
+    if (err) return res.status(500).json({ error: err.message });
 
-      const updateItems = `UPDATE order_items SET order_id = ? WHERE order_id IS NULL`;
-      db.run(updateItems, [order.id], function (err) {
+    const updateItems = `UPDATE order_items SET order_id = ? WHERE order_id IS NULL`;
+    db.run(updateItems, [order.id], function (err) {
         if (err) return res.status(500).json({ error: err.message });
 
         res.json({
-          message: "Pedido confirmado",
-          order_id: order.id,
-          total,
-          items
+        message: "Pedido confirmado",
+        order_id: order.id,
+        total,
+        items
+         });
         });
-      });
     });
   });
 };

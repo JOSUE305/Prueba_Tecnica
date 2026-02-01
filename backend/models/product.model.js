@@ -1,39 +1,39 @@
-import db from '../config/db.js';
+import db from "../config/db.js";
 
-// Crear un nuevo producto
+// Crear producto
 export const createProduct = (product, callback) => {
-    const { name, price, category_id } = product;
-    db.run(
-        `INSERT INTO products (name, price, category_id) VALUES (?, ?, ?)`,
-        [name, price, category_id],
-        function (err) {
-            callback(err, { id: this.lastID, ...product });
-        }
-    );
+  const { name, price, category_id, stock } = product;
+  const sql = "INSERT INTO products (name, price, category_id, stock) VALUES (?, ?, ?, ?)";
+  db.run(sql, [name, price, category_id, stock], function (err) {
+    if (err) return callback(err);
+    callback(null, { id: this.lastID, ...product });
+  });
 };
 
-// Obtener todos los productos
+// Obtener productos
 export const getProducts = (callback) => {
-    db.all(`SELECT * FROM products`, [], (err, rows) => {
-        callback(err, rows);
-    });
+  const sql = "SELECT id, name, price, category_id, stock FROM products";
+  db.all(sql, [], (err, rows) => {
+    if (err) return callback(err);
+    callback(null, rows);
+  });
 };
 
-// Actualizar un producto
+// Actualizar producto
 export const updateProduct = (id, product, callback) => {
-    const { name, price, category_id } = product;
-    db.run(
-        `UPDATE products SET name = ?, price = ?, category_id = ? WHERE id = ?`,
-        [name, price, category_id, id],
-        function (err) {
-            callback(err, { id, ...product });
-        }
-    );
+  const { name, price, category_id, stock } = product;
+  const sql = "UPDATE products SET name = ?, price = ?, category_id = ?, stock = ? WHERE id = ?";
+  db.run(sql, [name, price, category_id, stock, id], function (err) {
+    if (err) return callback(err);
+    callback(null, { id, ...product });
+  });
 };
 
-// Eliminar un producto
+// Eliminar producto
 export const deleteProduct = (id, callback) => {
-    db.run(`DELETE FROM products WHERE id = ?`, id, function (err) {
-        callback(err);
-    });
+  const sql = "DELETE FROM products WHERE id = ?";
+  db.run(sql, [id], function (err) {
+    if (err) return callback(err);
+    callback(null);
+  });
 };

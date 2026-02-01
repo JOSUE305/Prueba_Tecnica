@@ -1,12 +1,37 @@
-import db from '../config/db.js';
+import db from "../config/db.js";
 
-// Crear un nuevo pedido
-export const createOrder = (userId, total, callback) => {
-  const query = `INSERT INTO orders (user_id, total) VALUES (?, ?)`;
-  db.run(query, [userId, total], function (err) {
-    callback(err, { id: this.lastID });
+// Crear un nuevo pedido con items y actualizar stock
+export const createOrder = (userId, total, items, callback) => {
+  const queryOrder = `INSERT INTO orders (user_id, total, created_at) VALUES (?, ?, datetime('now'))`;
+
+  db.run(queryOrder, [userId, total], function (err) {
+    if (err) return callback(err);
+
+    const orderId = this.lastID;
+
+    items.forEach((item) => {
+      // validar stock
+      const checkStock = `SELECT stock FROM products WHERE id = ?`;
+      db.get(checkStock, [item.product_id], (err, row) => {
+        if (err) return callback(err);
+        if (!row || row.stock < item.quantity) {
+          return callback(new Error(`Stock insuficiente para producto ${item.product_id}`));
+        }
+
+        // insertar item
+        const queryItem = `INSERT INTO order_items (order_id, product_id, quantity, price) VALUES (?, ?, ?, ?)`;
+        db.run(queryItem, [orderId, item.product_id, item.quantity, item.price]);
+
+        // descontar stock
+        const queryStock = `UPDATE products SET stock = stock - ? WHERE id = ?`;
+        db.run(queryStock, [item.quantity, item.product_id]);
+      });
+    });
+
+    callback(null, { id: orderId, message: "Orden creada y stock actualizado" });
   });
 };
+
 
 // Obtener todos los pedidos de un usuario
 export const getOrdersByUser = (userId, callback) => {
