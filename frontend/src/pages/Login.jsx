@@ -14,12 +14,14 @@ function Login() {
     const res = await loginAPI(username, password);
 
     if (res.token) {
-      login({ username }, res.token); // guardamos usuario y token
-      alert("Login exitoso ✅");
-      navigate("/"); // redirigir a Home
-    } else {
-      alert(res.message || "Credenciales inválidas ❌");
-    }
+  // 👇 ahora usamos el username y role que devuelve el backend
+  login({ username: res.username, role: res.role }, res.token);
+  alert("Login exitoso ✅");
+  navigate("/");
+} else {
+  alert(res.message || "Credenciales inválidas ❌");
+}
+
   };
 
   return (

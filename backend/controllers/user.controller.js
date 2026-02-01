@@ -4,11 +4,8 @@ import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 dotenv.config();
 
-
 const SECRET_KEY = (process.env.SECRET_KEY || "").trim();
 const TOKEN_EXPIRATION = process.env.TOKEN_EXPIRATION || "1h";
-
-
 
 // Registro
 export const register = async (req, res) => {
@@ -58,7 +55,12 @@ export const login = async (req, res) => {
         { expiresIn: TOKEN_EXPIRATION }
       );
 
-      res.json({ token });
+      // 👇 ahora devolvemos también username y role
+      res.json({
+        token,
+        username: user.username,
+        role: user.role
+      });
     });
   } catch (error) {
     res.status(500).json({ message: "Error en el login", error: error.message });
