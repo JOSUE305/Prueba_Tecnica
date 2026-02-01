@@ -13,4 +13,4 @@ node_modules/
 # Copias de seguridad o dumps de la base de datos
 *.sqlite
 *.db
-*.sql
+
