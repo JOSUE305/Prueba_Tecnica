@@ -36,3 +36,7 @@ CREATE TABLE order_items (
   FOREIGN KEY (order_id) REFERENCES orders(id),
   FOREIGN KEY (product_id) REFERENCES products(id)
 );
+
+-- Insertar usuario admin por defecto
+INSERT INTO users (username, password, role)
+VALUES ('admin', '$2b$10$N.WmqsELIxJql0AGcdSieOfbQBjCYj5ddobEiD97f3xsHP5fejK9y', 'admin');
