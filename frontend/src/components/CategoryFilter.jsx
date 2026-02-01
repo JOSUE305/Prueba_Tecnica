@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { getCategories } from "../services/api.js";
 
-function CategoryFilter({ categories, selected, onSelect }) {
+function CategoryFilter({ categories = [], selected, onSelect }) {
   return (
     <div className="filters">
       <button
@@ -23,5 +23,6 @@ function CategoryFilter({ categories, selected, onSelect }) {
     </div>
   );
 }
+
 
 export default CategoryFilter;
