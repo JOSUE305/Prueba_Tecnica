@@ -1,42 +1,38 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 function Cart() {
-  const [items, setItems] = useState([]);
+  const [items, setItems] = useState(() => {
+    const saved = localStorage.getItem("cart");
+    return saved ? JSON.parse(saved) : [];
+  });
   const navigate = useNavigate();
 
   useEffect(() => {
-    const savedCart = JSON.parse(localStorage.getItem("cart")) || [];
-    setItems(savedCart);
-  }, []);
+    localStorage.setItem("cart", JSON.stringify(items));
+  }, [items]);
 
   const total = items.reduce((sum, item) => sum + item.quantity * item.price, 0);
 
-  // aumentar cantidad
-  const increaseQuantity = (index) => {
-    const updated = [...items];
-    updated[index].quantity += 1;
-    setItems(updated);
-    localStorage.setItem("cart", JSON.stringify(updated));
-  };
-
-  // disminuir cantidad
-  const decreaseQuantity = (index) => {
-    const updated = [...items];
-    if (updated[index].quantity > 1) {
-      updated[index].quantity -= 1;
-      setItems(updated);
-      localStorage.setItem("cart", JSON.stringify(updated));
-    }
+  // aumentar/disminuir cantidad
+  const updateQuantity = (id, delta) => {
+    setItems((prev) =>
+      prev
+        .map((item) =>
+          item.id === id
+            ? { ...item, quantity: Math.max(0, item.quantity + delta) }
+            : item
+        )
+        .filter((item) => item.quantity > 0)
+    );
   };
 
   // eliminar producto
-  const removeItem = (index) => {
-    const updated = items.filter((_, i) => i !== index);
-    setItems(updated);
-    localStorage.setItem("cart", JSON.stringify(updated));
+  const removeItem = (id) => {
+    setItems((prev) => prev.filter((item) => item.id !== id));
   };
 
+  // checkout con backend
   const handleCheckout = async () => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -76,44 +72,68 @@ function Cart() {
   };
 
   return (
-    <div className="cart">
-      <h2>🛒 Mi Carrito</h2>
+    <div className="cart-page">
+      <div className="cart">
+        <h2>🛒 Mi Carrito</h2>
 
-      {items.length === 0 ? (
-        <p>Tu carrito está vacío</p>
-      ) : (
-        <div>
-          <table>
-            <thead>
-              <tr>
-                <th>Producto</th>
-                <th>Cantidad</th>
-                <th>Precio</th>
-                <th>Subtotal</th>
-                <th>Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              {items.map((item, idx) => (
-                <tr key={idx}>
-                  <td>{item.name}</td>
-                  <td>{item.quantity}</td>
-                  <td>${item.price}</td>
-                  <td>${item.quantity * item.price}</td>
-                  <td>
-                    <button onClick={() => increaseQuantity(idx)}>➕</button>
-                    <button onClick={() => decreaseQuantity(idx)}>➖</button>
-                    <button onClick={() => removeItem(idx)}>❌</button>
-                  </td>
+        {items.length === 0 ? (
+          <div className="cart-empty">
+            <p>Tu carrito está vacío</p>
+            <Link to="/" className="btn-primary">
+              Ver productos
+            </Link>
+          </div>
+        ) : (
+          <>
+            <table>
+              <thead>
+                <tr>
+                  <th>Producto</th>
+                  <th>Precio</th>
+                  <th>Cantidad</th>
+                  <th>Subtotal</th>
+                  <th>Acciones</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {items.map((item) => (
+                  <tr key={item.id}>
+                    <td>{item.name}</td>
+                    <td>${item.price.toFixed(2)}</td>
+                    <td>
+                      <div className="quantity-controls">
+                        <button onClick={() => updateQuantity(item.id, -1)}>
+                          -
+                        </button>
+                        <span>{item.quantity}</span>
+                        <button onClick={() => updateQuantity(item.id, 1)}>
+                          +
+                        </button>
+                      </div>
+                    </td>
+                    <td>${(item.price * item.quantity).toFixed(2)}</td>
+                    <td>
+                      <button
+                        className="btn-remove"
+                        onClick={() => removeItem(item.id)}
+                      >
+                        Eliminar
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
 
-          <h3>Total: ${total}</h3>
-          <button onClick={handleCheckout}>Confirmar compra</button>
-        </div>
-      )}
+            <div className="cart-summary">
+              <h3>Total: ${total.toFixed(2)}</h3>
+              <button className="btn-checkout" onClick={handleCheckout}>
+                Finalizar Compra
+              </button>
+            </div>
+          </>
+        )}
+      </div>
     </div>
   );
 }

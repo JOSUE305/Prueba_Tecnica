@@ -1,53 +1,91 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
-import CourseCard from "../components/CourseCard";
-import CategoryFilter from "../components/CategoryFilter";
+import HeroSection from "../components/HeroSection";
 import AboutSection from "../components/AboutSection";
-import { getProducts } from "../services/api.js";
+import CategoryFilter from "../components/CategoryFilter";
+import CourseCard from "../components/CourseCard";
+import Footer from "../components/Footer";
+import { getProducts, getCategories } from "../services/api.js";
 
 function Home() {
   const [products, setProducts] = useState([]);
-  const [filteredProducts, setFilteredProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [cart, setCart] = useState(() => {
+    const saved = localStorage.getItem("cart");
+    return saved ? JSON.parse(saved) : [];
+  });
 
   useEffect(() => {
     async function fetchData() {
-      const data = await getProducts(); // llamada al backend
-      console.log("Productos desde API:", data); // 👀 log para verificar
-      setProducts(data);
-      setFilteredProducts(data); // inicializa con todos
+      const dataProducts = await getProducts();
+      console.log("Productos desde API:", dataProducts);
+      setProducts(dataProducts);
+
+      const dataCategories = await getCategories();
+      setCategories(dataCategories);
     }
     fetchData();
   }, []);
 
-  // función para filtrar
-  const handleFilter = (categoryId) => {
-    if (!categoryId) {
-      setFilteredProducts(products);
-    } else {
-      setFilteredProducts(products.filter((p) => p.category_id === Number(categoryId)));
-    }
+  useEffect(() => {
+    localStorage.setItem("cart", JSON.stringify(cart));
+  }, [cart]);
+
+  // Filtrado por categoría
+  const filteredProducts = selectedCategory
+    ? products.filter((p) => p.category_id === Number(selectedCategory))
+    : products;
+
+  // Agregar al carrito
+  const addToCart = (product) => {
+    setCart((prev) => {
+      const exists = prev.find((item) => item.id === product.id);
+      if (exists) {
+        return prev.map((item) =>
+          item.id === product.id
+            ? { ...item, quantity: item.quantity + 1 }
+            : item
+        );
+      }
+      return [...prev, { ...product, quantity: 1 }];
+    });
   };
 
   return (
-    <>
+    <div className="home">
       <Navbar />
+      <HeroSection />
 
       <main className="container">
-        <h1>Carnicería JP 🥩</h1>
-        <p>Los mejores cortes al mejor precio</p>
-
         <AboutSection />
 
-        {/* 👇 ahora sí pasamos la función */}
-        <CategoryFilter onFilter={handleFilter} />
+        <section className="products-section">
+          <h2 className="section-title">Nuestros Productos</h2>
+          <p className="section-subtitle">
+            Selecciona una categoría para filtrar
+          </p>
 
-        <div className="grid">
-          {filteredProducts.map((product) => (
-            <CourseCard key={product.id} product={product} />
-          ))}
-        </div>
+          <CategoryFilter
+            categories={categories}
+            selected={selectedCategory}
+            onSelect={setSelectedCategory}
+          />
+
+          <div className="grid">
+            {filteredProducts.map((product) => (
+              <CourseCard
+                key={product.id}
+                product={product}
+                onAddToCart={addToCart}
+              />
+            ))}
+          </div>
+        </section>
       </main>
-    </>
+
+      <Footer />
+    </div>
   );
 }
 
